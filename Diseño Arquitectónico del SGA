@@ -1,0 +1,643 @@
+{
+  "runSettings": {
+    "temperature": 1.0,
+    "model": "models/gemini-3.8-flash",
+    "topP": 0.95,
+    "topK": 64,
+    "maxOutputTokens": 65536,
+    "safetySettings": [{
+      "category": "HARM_CATEGORY_HARASSMENT",
+      "threshold": "OFF"
+    }, {
+      "category": "HARM_CATEGORY_HATE_SPEECH",
+      "threshold": "OFF"
+    }, {
+      "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+      "threshold": "OFF"
+    }, {
+      "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+      "threshold": "OFF"
+    }],
+    "enableCodeExecution": false,
+    "enableSearchAsATool": true,
+    "enableBrowseAsATool": false,
+    "thinkingBudget": -1,
+    "googleSearch": {
+    },
+    "thinkingLevel": "THINKING_MEDIUM",
+    "enableImageSearch": false,
+    "enableGoogleMaps": false,
+    "enableAgentThinkingSummariesControl": false,
+    "enableAgentVisualizationControl": false,
+    "enableAgentCollaborativePlanningControl": false,
+    "enableWordTimestamps": false,
+    "enableSpeakerDiarization": false,
+    "enablePolishedTranscript": false
+  },
+  "systemInstruction": {
+  },
+  "chunkedPrompt": {
+    "chunks": [{
+      "text": "Hola, Propón una arquitectura de software para este SGA, con estilo arquitectónico, componentes, riesgos y decisiones justificadas\n3. Alcance, actores, supuestos y restricciones\nAlcance. Se incluye el diseño arquitectónico completo del SGA (módulos, interfaces, datos, despliegue y calidad). No se incluye la implementación total del sistema, la migración de datos históricos ni la integración real con plataformas externas (solo se deja la interfaz REST preparada).\nActores:\nActor\tDescripción\nAdministrador\tGestiona usuarios, roles, estudiantes, docentes y configuración general; consulta la auditoría.\nCoordinador académico\tGestiona programas, asignaturas, periodos, grupos y matrículas; genera reportes.\nDocente\tConsulta sus grupos y registra o actualiza calificaciones de sus estudiantes.\nEstudiante\tConsulta sus asignaturas matriculadas, horarios y calificaciones publicadas.\nSupuestos:\n•\tLa institución tiene del orden de 300 usuarios concurrentes en el escenario de referencia (RNF-02).\n•\tLos usuarios acceden con navegadores web recientes.\n•\tLa institución dispone de infraestructura en la nube o de servidores propios con soporte para contenedores.\n•\tLas reglas de matrícula (cupos, no duplicidad) las define la coordinación académica.\nRestricciones:\n•\tAcceso únicamente por web, con HTTPS obligatorio.\n•\tEquipo de desarrollo pequeño (3 a 5 personas).\n•\tNo se usan datos personales reales en prompts, capturas ni repositorios.\n•\tLas interfaces deben estar documentadas, preferiblemente con API REST.\nReglas de negocio principales:\n•\tRN-1: un estudiante no puede matricularse dos veces en el mismo grupo o asignatura del mismo periodo.\n•\tRN-2: no se puede matricular por encima del cupo del grupo.\n•\tRN-3: solo el docente asignado a un grupo puede calificar a los estudiantes matriculados en él.\n•\tRN-4: el estudiante solo ve calificaciones publicadas.\n•\tRN-5: toda modificación de matrícula, rol o calificación queda auditada.\n4. Requerimientos funcionales y no funcionales\n4.1 Requerimientos funcionales (RF)\nID\tNombre\tAnálisis (módulo responsable)\nRF-01\tAutenticación\tInicio y cierre de sesión con credenciales individuales. Módulo Autenticación.\nRF-02\tRoles y permisos\tMínimo cuatro roles con funciones restringidas. Módulo Autorización (RBAC).\nRF-03\tGestión de estudiantes\tRegistrar, consultar, actualizar y desactivar. Módulo Gestión Académica.\nRF-04\tGestión de docentes\tRegistrar, consultar, actualizar y desactivar. Módulo Gestión Académica.\nRF-05\tProgramas y asignaturas\tCrear y actualizar programas, planes de estudio y asignaturas. Módulo Gestión Académica.\nRF-06\tGrupos y periodos\tConfigurar periodos, grupos, cupos, docentes, horarios y aulas o enlaces. Módulo Gestión Académica.\nRF-07\tMatrícula académica\tMatricular, validar cupos y evitar duplicados. Módulo Matrículas.\nRF-08\tRegistro de calificaciones\tEl docente registra y actualiza notas de sus grupos. Módulo Calificaciones.\nRF-09\tConsulta de resultados\tEl estudiante consulta asignaturas, horarios y notas publicadas. Módulos Matrículas y Calificaciones.\nRF-10\tReportes\tReportes básicos con filtros por periodo y programa. Módulo Reportes.\nRF-11\tBúsqueda y filtros\tBúsqueda por identificador, nombre, programa, periodo o estado. Todos los módulos de consulta.\nRF-12\tAuditoría\tRegistro de eventos con usuario, fecha, acción y registro afectado. Módulo Auditoría.\n4.2 Requerimientos no funcionales (RNF)\nID\tAtributo\tAnálisis (cómo se atiende)\nRNF-01\tSeguridad\tHTTPS, hash de contraseñas, control por roles.\nRNF-02\tRendimiento\t95 % de consultas en 3 s o menos con 300 usuarios concurrentes: índices, caché y pruebas de carga.\nRNF-03\tDisponibilidad\t99,5 % mensual: múltiples instancias, balanceador, BD con réplica.\nRNF-04\tEscalabilidad\tEscalado horizontal del backend sin estado; BD escalable verticalmente y con réplicas de lectura.\nRNF-05\tMantenibilidad\tMódulos con bajo acoplamiento, interfaces internas definidas y pruebas automatizadas.\nRNF-06\tUsabilidad y accesibilidad\tInterfaz responsive, etiquetas claras, buen contraste y operación por teclado.\nRNF-07\tIntegridad y consistencia\tTransacciones ACID y restricciones en BD; control de concurrencia en matrícula y notas.\nRNF-08\tInteroperabilidad\tAPI REST documentada con OpenAPI.\nRNF-09\tRespaldo y recuperación\tCopias periódicas, restauración probada, objetivos RPO y RTO definidos.\nRNF-10\tTrazabilidad\tMatriz de trazabilidad (sección 8).\nRNF-11\tPrivacidad\tAcceso mínimo necesario por rol y filtrado de datos en el backend.\nRNF-12\tCompatibilidad\tSPA responsive probada en navegadores recientes.\n",
+      "role": "user",
+      "tokenCount": 1189,
+      "createTime": "2026-11-07T17:27:25.130Z"
+    }, {
+      "text": "**Defining the Objective**\n\nI\u0027m currently focused on defining the primary objective: architecting an Academic Management System (SGA). I am meticulously examining the provided constraints, scope, actors, business rules, and functional requirements to understand all facets of the project. This is to ensure a robust and comprehensive architecture proposal.\n\n\n**Analyzing Architectural Needs**\n\nI\u0027ve been analyzing the architectural needs, specifically focusing on the most suitable architectural style given the constraints: a team of 3-5 developers and 300 concurrent users. Microservices appear to be excessive, so I\u0027m leaning toward a Modular Monolith with a decoupled SPA frontend and a REST API backend. This approach seems optimal. I\u0027m also considering the key components, considering the modules I need to include: Auth/RBAC, Academic Management, Enrollment, Grading, Reporting, and Audit, which will dictate structure and componentry.\n\n\n**Evaluating Architectural Risks**\n\nI\u0027m now deep-diving into the potential architectural risks and their mitigations. Specifically, I\u0027m examining race conditions concerning enrollment limits (\"cupos\"), data inconsistency issues, and performance bottlenecks, particularly during peak enrollment and grading periods. The limited team size is also a critical consideration.\n\n\n**Defining Architecture Structure**\n\nI\u0027m solidifying the architecture structure; a Modular Monolith with a decoupled SPA frontend, REST API backend, and clear module boundaries (RF-01 to RF-12) for future migration if needed. Deployment will be handled with homogeneous replicas behind a load balancer.\n\nI\u0027m defining the component and layer views. The presentation layer will be a responsive SPA (React/Vue), communicating via HTTPS. The perimeter layer includes a reverse proxy/Ingress (Nginx/Traefik) for SSL/TLS termination, compression, rate limiting, and load balancing. The application layer (stateless backend) will include modules for IAM/Security (JWT/OAuth2, RBAC), academic management (Teachers, Students), and enrollment (critical quota logic).\n\n\n**Detailing System Components**\n\nI\u0027m now detailing each module\u0027s internal mechanisms, moving past structure. I\u0027m focusing on concurrency controls (optimistic/pessimistic locking) and data integrity within the database. I\u0027m deep diving into the specific functionality of the modules. I\u0027m outlining how the grading, reporting/search, and audit modules will function, and their respective requirements. I\u0027m also planning the integration of OpenAPI/Swagger documentation. I am evaluating the RDBMS database (PostgreSQL) and in-memory cache (Redis) layers, ensuring support for ACID properties and appropriate indexing for efficient querying.\n\n\n**Refining Technical Specifications**\n\nI am now focusing on refining the technical specifications, particularly the concurrency control strategies for enrollment and grading. I\u0027ve detailed transaction approaches using pessimistic locking with `SELECT...FOR UPDATE` or optimistic locking with atomic updates. For grading, I\u0027m ensuring RBAC middleware to enforce teacher authorization and filtering student queries to show only published grades. I am also planning the logging module using database triggers and application interceptors to capture a comprehensive audit trail with relevant context.\n\n\n**Evaluating Database Solutions**\n\nI am now evaluating the database solutions. I\u0027m choosing PostgreSQL over NoSQL due to the need for strict ACID properties and referential integrity, critical for managing enrollments and grades. Furthermore, I\u0027ve opted for a stateless authentication method using JWT within an HttpOnly Secure Cookie and RBAC to enable horizontal scalability. I\u0027m also planning to utilize Redis for caching to accelerate read operations, especially during enrollment and grade query periods. Finally, I\u0027ve also decided to use containers for deployment to ensure portability across different environments.\n\n\n\n",
+      "role": "model",
+      "tokenCount": 1965,
+      "isThought": true,
+      "parts": [{
+        "text": "**Defining the Objective**\n\nI\u0027m currently focused on defining the primary objective: architecting an Academic Management System (SGA). I am meticulously examining the provided constraints, scope, actors, business rules, and functional requirements to understand all facets of the project. This is to ensure a robust and comprehensive architecture proposal.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Analyzing Architectural Needs**\n\nI\u0027ve been analyzing the architectural needs, specifically focusing on the most suitable architectural style given the constraints: a team of 3-5 developers and 300 concurrent users. Microservices appear to be excessive, so I\u0027m leaning toward a Modular Monolith with a decoupled SPA frontend and a REST API backend. This approach seems optimal. I\u0027m also considering the key components, considering the modules I need to include: Auth/RBAC, Academic Management, Enrollment, Grading, Reporting, and Audit, which will dictate structure and componentry.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Evaluating Architectural Risks**\n\nI\u0027m now deep-diving into the potential architectural risks and their mitigations. Specifically, I\u0027m examining race conditions concerning enrollment limits (\"cupos\"), data inconsistency issues, and performance bottlenecks, particularly during peak enrollment and grading periods. The limited team size is also a critical consideration.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Defining Architecture Structure**\n\nI\u0027m solidifying the architecture structure; a Modular Monolith with a decoupled SPA frontend, REST API backend, and clear module boundaries (RF-01 to RF-12) for future migration if needed. Deployment will be handled with homogeneous replicas behind a load balancer.\n\nI\u0027m defining the component and layer views. The presentation layer will be a responsive SPA (React/Vue), communicating via HTTPS. The perimeter layer includes a reverse proxy/Ingress (Nginx/Traefik) for SSL/TLS termination, compression, rate limiting, and load balancing. The application layer (stateless backend) will include modules for IAM/Security (JWT/OAuth2, RBAC), academic management (Teachers, Students), and enrollment (critical quota logic).\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Detailing System Components**\n\nI\u0027m now detailing each module\u0027s internal mechanisms, moving past structure. I\u0027m focusing on concurrency controls (optimistic/pessimistic locking) and data integrity within the database. I\u0027m deep diving into the specific functionality of the modules. I\u0027m outlining how the grading, reporting/search, and audit modules will function, and their respective requirements. I\u0027m also planning the integration of OpenAPI/Swagger documentation. I am evaluating the RDBMS database (PostgreSQL) and in-memory cache (Redis) layers, ensuring support for ACID properties and appropriate indexing for efficient querying.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Refining Technical Specifications**\n\nI am now focusing on refining the technical specifications, particularly the concurrency control strategies for enrollment and grading. I\u0027ve detailed transaction approaches using pessimistic locking with `SELECT...FOR UPDATE` or optimistic locking with atomic updates. For grading, I\u0027m ensuring RBAC middleware to enforce teacher authorization and filtering student queries to show only published grades. I am also planning the logging module using database triggers and application interceptors to capture a comprehensive audit trail with relevant context.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Evaluating Database Solutions**\n\nI am now evaluating the database solutions. I\u0027m choosing PostgreSQL over NoSQL due to the need for strict ACID properties and referential integrity, critical for managing enrollments and grades. Furthermore, I\u0027ve opted for a stateless authentication method using JWT within an HttpOnly Secure Cookie and RBAC to enable horizontal scalability. I\u0027m also planning to utilize Redis for caching to accelerate read operations, especially during enrollment and grade query periods. Finally, I\u0027ve also decided to use containers for deployment to ensure portability across different environments.\n\n\n\n",
+        "thought": true
+      }],
+      "createTime": "2026-11-07T17:27:25.131Z"
+    }, {
+      "text": "A continuación, se presenta la propuesta de arquitectura de software para el **Sistema de Gestión Académica (SGA)**, diseñada a partir de los requerimientos, restricciones y el contexto operativo del proyecto.\n\n---\n\n# 1. Estilo Arquitectónico Seleccionado y Justificación\n\n### **Estilo: Monolito Modular con Separación Frontend SPA y Backend API REST (Arquitectura Limpia / Capas)**\n\n```\n[ Cliente Web (SPA Responsive) ]\n              │  (HTTPS / JSON REST API)\n              ▼\n    [ Reverse Proxy / Ingress ] (TLS, Rate Limit, Compresión)\n              │\n  ┌───────────▼──────────────────────────────────────────────┐\n  │                    BACKEND (Stateless)                   │\n  │  ┌───────────────┐ ┌────────────────┐ ┌───────────────┐  │\n  │  │  Auth \u0026 RBAC  │ │ Gestión Acad.  │ │   Matrículas  │  │\n  │  └───────┬───────┘ └───────┬────────┘ └───────┬───────┘  │\n  │  ┌───────┴───────┐ ┌───────┴────────┐ ┌───────┴───────┐  │\n  │  │ Calificaciones│ │    Reportes    │ │   Auditoría   │  │\n  │  └───────────────┘ └────────────────┘ └───────────────┘  │\n  └───────────┬───────────────────────────────┬──────────────┘\n              │                               │\n              ▼                               ▼\n    [ PostgreSQL (ACID) ]              [ Redis Cache ]\n  (Primary + Read Replica)            (Sesiones/Catálogos)\n```\n\n### **Justificación de la elección:**\n1. **Tamaño del equipo (3 a 5 desarrolladores):** Una arquitectura de microservicios introduciría una carga operacional desproporcionada (malla de servicios, transacciones distribuidas complejas mediante Sagas, observabilidad distribuida y despliegues múltiples).\n2. **Carga estimada (300 usuarios concurrentes):** Una aplicación monolítica modular bien construida y empaquetada en contenedores puede soportar con holgura miles de peticiones concurrentes por instancia con un consumo de recursos muy bajo.\n3. **Mantenibilidad y límites de dominio (RNF-05):** El monolito modular estructura el código internamente por dominios desacoplados (Módulos de Auth, Académico, Matrículas, etc.) comunicados mediante interfaces y eventos internos. Si a futuro un módulo requiere independencia, su extracción es trivial.\n4. **Backend sin estado (Stateless) para escalabilidad (RNF-04):** Permite escalar horizontalmente desplegando $N$ réplicas idénticas del backend detrás de un balanceador de carga.\n\n---\n\n# 2. Componentes de la Arquitectura\n\n### 2.1. Capa de Presentación (Frontend SPA)\n* **Tecnología recomendada:** React, Vue o Angular.\n* **Características:** Responsive (RNF-06, RNF-12), accesible (WCAG 2.1 AA), comunicación exclusiva vía HTTPS hacia la API.\n* **Gestión de Sesión:** Consumo de cookies seguras `HttpOnly`, `SameSite\u003dStrict`, `Secure` con tokens JWT para mitigar vulnerabilidades XSS y CSRF.\n\n### 2.2. Capa Perimetral y Enrutamiento (Reverse Proxy / Load Balancer)\n* **Tecnología recomendada:** NGINX o Traefik.\n* **Responsabilidades:**\n  * Terminación TLS/HTTPS obligatoria.\n  * Balanceo de carga hacia los contenedores de backend.\n  * Rate limiting básico para mitigar abusos de fuerza bruta en autenticación (RF-01).\n  * Servir los estáticos de la SPA con compresión (Brotli/Gzip) y cabeceras de caché.\n\n### 2.3. Capa de Lógica de Negocio (Backend)\nCompuesta por módulos cohesionados e independientes en código:\n\n| Componente / Módulo | Responsabilidad Principal | Reglas y Requerimientos Asociados |\n| :--- | :--- | :--- |\n| **Módulo Auth \u0026 RBAC** | Emisión y validación de credenciales, control de acceso basado en roles (Admin, Coordinador, Docente, Estudiante). | RF-01, RF-02, RNF-01, RNF-11 |\n| **Módulo Gestión Académica** | Gestión de estudiantes, docentes, programas, planes, asignaturas, periodos y grupos/horarios. | RF-03, RF-04, RF-05, RF-06 |\n| **Módulo de Matrículas** | Inscripción de materias con validación transaccional estricta de cupos y cruces/duplicados. | RF-07, **RN-1, RN-2**, RNF-07 |\n| **Módulo de Calificaciones** | Registro, edición, publicación y consulta de notas por grupo. | RF-08, RF-09, **RN-3, RN-4** |\n| **Módulo de Reportes y Búsqueda** | Consultas agregadas con filtros avanzados; generación de listados y actas. | RF-10, RF-11 |\n| **Módulo de Auditoría** | Interceptor transversal que registra operaciones críticas de forma asíncrona. | RF-12, **RN-5**, RNF-10 |\n\n### 2.4. Capa de Datos y Persistencia\n* **Base de Datos Relacional (RDBMS - PostgreSQL):**\n  * Manejo estricto de transacciones ACID (RNF-07) para prevenir cupos negativos o duplicidades.\n  * Esquema con restricciones nativas (`UNIQUE`, `CHECK`, `FOREIGN KEY`).\n  * Estructura Primary-Replica: el nodo primario atiende escrituras y una réplica atiende lecturas pesadas/reportes (RF-10) evitando cuellos de botella en la transaccionalidad de matrículas.\n* **Caché en Memoria (Redis):**\n  * Caché de catálogos de lectura frecuente e infrecuente mutación (planes de estudio, asignaturas, periodos académicos activos) para garantizar el SLA de respuesta de $\\le 3\\text{ s}$ para el 95% de peticiones (RNF-02).\n  * Almacén transitorio para lista de revocación de tokens JWT.\n\n---\n\n# 3. Diseño de Reglas de Negocio Clave\n\n1. **RN-1 (No duplicidad de matrícula):**\n   * *Mecanismo:* Índice único compuesto a nivel de base de datos: `UNIQUE(estudiante_id, asignatura_id, periodo_id)` y `UNIQUE(estudiante_id, grupo_id)`. Se complementa con validación previa en la capa de aplicación.\n2. **RN-2 (Control de cupo del grupo bajo concurrencia):**\n   * *Mecanismo:* Para prevenir condiciones de carrera cuando 300 usuarios intentan matricular el último cupo simultáneamente, la transacción de matrícula usa una actualización atómica con condición:\n     ```sql\n     UPDATE grupos \n     SET cupo_matriculado \u003d cupo_matriculado + 1 \n     WHERE id \u003d :grupo_id AND cupo_matriculado \u003c cupo_maximo;\n     ```\n     Si la consulta retorna 0 filas afectadas, se lanza una excepción de negocio `\"Cupo agotado\"` y se aborta la transacción sin bloqueo de tabla completo.\n3. **RN-3 (Solo docente califica su grupo):**\n   * *Mecanismo:* Validación en la capa de servicio/política:\n     `Assert(grupo.docente_id \u003d\u003d usuarioActual.id || usuarioActual.tieneRol(\u0027ADMIN\u0027))`.\n4. **RN-4 (Estudiante solo ve notas publicadas):**\n   * *Mecanismo:* Consulta encapsulada con filtro mandatorio:\n     `SELECT * FROM notas WHERE matricula_id \u003d :id AND estado_publicacion \u003d \u0027PUBLICADA\u0027`.\n5. **RN-5 (Trazabilidad y Auditoría):**\n   * *Mecanismo:* Interceptor AOP (Aspect-Oriented Programming) o middleware en endpoints mutadores (POST, PUT, DELETE) que despacha un evento desacoplado a la tabla `auditoria` con: `id_usuario`, `accion`, `entidad`, `datos_antes`, `datos_despues`, `timestamp` e `ip_origen`.\n\n---\n\n# 4. Decisiones de Arquitectura Justificadas (ADR)\n\n| ID | Decisión | Alternativa Descartada | Justificación Técnica |\n| :---: | :--- | :--- | :--- |\n| **ADR-01** | **Monolito Modular** | Microservicios | Equipo reducido (3-5 personas) con riesgo de sobrecarga operacional. La modularidad interna ofrece límites de contexto claros sin el costo de red/infraestructura de microservicios. |\n| **ADR-02** | **PostgreSQL (RDBMS)** | NoSQL (MongoDB) | RN-1 y RN-2 exigen ACID estricto y consistencia inmediata. Las bases de datos relacionales manejan llaves compuestas e integridad referencial de forma nativa y robusta. |\n| **ADR-03** | **Tokens JWT en Cookies HttpOnly/Secure** | JWT en LocalStorage / Sesión en memoria de servidor | La sesión en memoria rompe la escalabilidad horizontal (RNF-04). Guardar tokens en LocalStorage expone al sistema a robo por XSS. Las cookies seguras mitigan XSS y permiten backend stateless. |\n| **ADR-04** | **Documentación OpenAPI 3.0 / Swagger** | Documentación manual (Wiki/Postman) | Cumple RNF-08. Permite autogenerar contratos, clientes de prueba y valida la interoperabilidad con plataformas externas a futuro. |\n| **ADR-05** | **Contenedores Docker con Compose/Kubernetes liviano** | Despliegue en Bare Metal tradicional | Garantiza portabilidad entre la nube o servidores locales con contenedores (Supuesto 3), facilitando despliegues reproducibles y escalado de réplicas en minutos. |\n\n---\n\n# 5. Análisis de Riesgos Arquitectónicos y Estrategias de Mitigación\n\n| Riesgo Identificado | Impacto | Probabilidad | Estrategia de Mitigación |\n| :--- | :---: | :---: | :--- |\n| **Picos de concurrencia en periodo de matrícula:** Bloqueos en BD o latencia $\u003e 3\\text{ s}$ por consultas masivas. | Alto | Media | 1. Réplica de lectura para consultas de horarios/cupos.\u003cbr\u003e2. Redis para almacenar el catálogo general de asignaturas.\u003cbr\u003e3. Pool de conexiones optimizado (ej. PgBouncer/HikariCP) configurado para soportar 300 conexiones concurrentes sin saturar la RAM de la BD. |\n| **Condición de carrera en asignación de cupos (Sobrecupo):** Dos transacciones leen el último cupo disponible a la vez y ambas lo asignan. | Crítico | Media | Bloqueo a nivel de fila (`SELECT FOR UPDATE`) o sentencias condicionales atómicas (`UPDATE ... WHERE cupo_actual \u003c cupo_maximo`) dentro de una transacción ACID aislada. |\n| **Sobrecarga de la base de datos por la Auditoría continua:** Cada modificación escribe en la auditoría, duplicando las escrituras. | Medio | Alta | La escritura del log de auditoría se desacopla mediante una cola en memoria/evento asíncrono; el hilo principal confirma la matrícula/nota al usuario y un *worker* escribe el log en BD en milisegundos. |\n| **Deuda técnica por equipo pequeño:** Degradación de la modularidad convirtiéndose en un \"código espagueti\". | Alto | Media | Pruebas automatizadas de arquitectura (ej. ArchUnit / ESLint module boundaries) en la integración continua (CI) para prohibir importaciones directas no autorizadas entre módulos. |\n| **Pérdida de datos por incidentes operativos (RNF-09):** Corrupción o caída imprevista del servidor de base de datos. | Crítico | Baja | Política de respaldos automáticos diarios (RPO \u003c 24 h), copia de WALs continuos para *Point-In-Time-Recovery* (RTO \u003c 2 h) y restauración probada periódicamente en ambientes de pruebas. |\n\n---\n\n# 6. Alineación de Calidad (RNF vs. Mecanismos Arquitectónicos)\n\n* **Rendimiento (RNF-02):** Backend asíncrono no bloqueante o con pool de hilos dimensionado, índices B-Tree en llaves foráneas y campos de filtro (`periodo_id`, `programa_id`), y caché Redis.\n* **Disponibilidad 99.5% (RNF-03):** 2 réplicas mínimas del contenedor de backend detrás del balanceador de carga con *health checks* automáticos de reemplazo; PostgreSQL con *failover* configurado.\n* **Mantenibilidad (RNF-05):** Arquitectura por capas (Controladores $\\rightarrow$ Servicios de Aplicación $\\rightarrow$ Dominio $\\rightarrow$ Repositorios) con inyección de dependencias para permitir pruebas unitarias con mocks.\n* **Privacidad (RNF-11):** Los DTOs (Data Transfer Objects) filtran datos sensibles en el backend; el serializador nunca expone credenciales, identificadores internos de auditoría ni datos privados de otros estudiantes.",
+      "role": "model",
+      "finishReason": "STOP",
+      "tokenCount": 3032,
+      "parts": [{
+        "text": "A continuación, se presenta la propuesta de arquitectura de software"
+      }, {
+        "text": " para el **Sistema de Gestión Académica (SGA)**, diseñada a partir de los requerimientos, restricciones y el contexto"
+      }, {
+        "text": " operativo del proyecto.\n\n---\n\n# 1. Estilo Arquitectónico Seleccionado y Justificación\n\n### **"
+      }, {
+        "text": "Estilo: Monolito Modular con Separación Frontend SPA y Backend API REST (Arquitectura Limpia / Capas)**\n\n"
+      }, {
+        "text": "```\n[ Cliente Web (SPA Responsive) ]\n              │  (HTTPS / JSON REST API)\n              ▼\n    "
+      }, {
+        "text": "[ Reverse Proxy / Ingress ] (TLS, Rate Limit, Compresión)\n              │\n  ┌──────────"
+      }, {
+        "text": "─▼──────────────────────────────────────────────┐\n  │                    BACKEND (Stateless)                   │\n  │  ┌"
+      }, {
+        "text": "───────────────┐ ┌────────────────┐ ┌───────────────┐  │\n  │  │  Auth \u0026"
+      }, {
+        "text": " RBAC  │ │ Gestión Acad.  │ │   Matrículas  │  │\n  │  └───────┬"
+      }, {
+        "text": "───────┘ └───────┬────────┘ └───────┬───────┘  │\n  │  ┌──────"
+      }, {
+        "text": "─┴───────┐ ┌───────┴────────┐ ┌───────┴───────┐  │\n  "
+      }, {
+        "text": "│  │ Calificaciones│ │    Reportes    │ │   Auditoría   │  │\n  │  └"
+      }, {
+        "text": "───────────────┘ └────────────────┘ └───────────────┘  │\n  └───────────┬────────────────────────"
+      }, {
+        "text": "───────┬──────────────┘\n              │                               │\n              ▼                               ▼\n    [ PostgreSQL (ACID) ]              "
+      }, {
+        "text": "[ Redis Cache ]\n  (Primary + Read Replica)            (Sesiones/Catálogos)\n```\n\n###"
+      }, {
+        "text": " **Justificación de la elección:**\n1. **Tamaño del equipo (3 a 5 desarrolladores):**"
+      }, {
+        "text": " Una arquitectura de microservicios introduciría una carga operacional desproporcionada (malla de servicios, transacciones distribuidas comple"
+      }, {
+        "text": "jas mediante Sagas, observabilidad distribuida y despliegues múltiples).\n2. **Carga estimada (300 usuarios concurrent"
+      }, {
+        "text": "es):** Una aplicación monolítica modular bien construida y empaquetada en contenedores puede soportar con hol"
+      }, {
+        "text": "gura miles de peticiones concurrentes por instancia con un consumo de recursos muy bajo.\n3. **Mantenibilidad y límites"
+      }, {
+        "text": " de dominio (RNF-05):** El monolito modular estructura el código internamente por dominios desacoplados (Módulos"
+      }, {
+        "text": " de Auth, Académico, Matrículas, etc.) comunicados mediante interfaces y eventos internos. Si a futuro un"
+      }, {
+        "text": " módulo requiere independencia, su extracción es trivial.\n4. **Backend sin estado (Stateless) para escalabilidad (RNF"
+      }, {
+        "text": "-04):** Permite escalar horizontalmente desplegando $N$ réplicas idénticas del backend detrás"
+      }, {
+        "text": " de un balanceador de carga.\n\n---\n\n# 2. Componentes de la Arquitectura\n\n### 2.1."
+      }, {
+        "text": " Capa de Presentación (Frontend SPA)\n* **Tecnología recomendada:** React, Vue o Angular.\n* **Características"
+      }, {
+        "text": ":** Responsive (RNF-06, RNF-12), accesible (WCAG 2.1 AA), comunicación exclusiva vía HTTPS"
+      }, {
+        "text": " hacia la API.\n* **Gestión de Sesión:** Consumo de cookies seguras `HttpOnly`, `SameSite\u003dStrict"
+      }, {
+        "text": "`, `Secure` con tokens JWT para mitigar vulnerabilidades XSS y CSRF.\n\n### 2.2. Capa"
+      }, {
+        "text": " Perimetral y Enrutamiento (Reverse Proxy / Load Balancer)\n* **Tecnología recomendada:** NGINX o Tra"
+      }, {
+        "text": "efik.\n* **Responsabilidades:**\n  * Terminación TLS/HTTPS obligatoria.\n  * Balance"
+      }, {
+        "text": "o de carga hacia los contenedores de backend.\n  * Rate limiting básico para mitigar abusos de fuerza bruta en"
+      }, {
+        "text": " autenticación (RF-01).\n  * Servir los estáticos de la SPA con compresión (Brotli/Gzip"
+      }, {
+        "text": ") y cabeceras de caché.\n\n### 2.3. Capa de Lógica de Negocio (Backend)\n"
+      }, {
+        "text": "Compuesta por módulos cohesionados e independientes en código:\n\n| Componente / Módulo | Responsabilidad Principal | Reg"
+      }, {
+        "text": "las y Requerimientos Asociados |\n| :--- | :--- | :--- |\n| **Módulo Auth"
+      }, {
+        "text": " \u0026 RBAC** | Emisión y validación de credenciales, control de acceso basado en roles (Admin, Coordin"
+      }, {
+        "text": "ador, Docente, Estudiante). | RF-01, RF-02, RNF-01"
+      }, {
+        "text": ", RNF-11 |\n| **Módulo Gestión Académica** | Gestión de estudiantes, docentes, programas"
+      }, {
+        "text": ", planes, asignaturas, periodos y grupos/horarios. | RF-03, RF-04, RF-05"
+      }, {
+        "text": ", RF-06 |\n| **Módulo de Matrículas** | Inscripción de materias con validación trans"
+      }, {
+        "text": "accional estricta de cupos y cruces/duplicados. | RF-07, **RN-1, RN-"
+      }, {
+        "text": "2**, RNF-07 |\n| **Módulo de Calificaciones** | Registro, edición, publicación y consulta"
+      }, {
+        "text": " de notas por grupo. | RF-08, RF-09, **RN-3, RN-4**"
+      }, {
+        "text": " |\n| **Módulo de Reportes y Búsqueda** | Consultas agregadas con filtros avanzados; generación"
+      }, {
+        "text": " de listados y actas. | RF-10, RF-11 |\n| **Módulo de"
+      }, {
+        "text": " Auditoría** | Interceptor transversal que registra operaciones críticas de forma asíncrona. | RF-12,"
+      }, {
+        "text": " **RN-5**, RNF-10 |\n\n### 2.4. Capa de Datos y Persistencia\n* **"
+      }, {
+        "text": "Base de Datos Relacional (RDBMS - PostgreSQL):**\n  * Manejo estricto de transacciones ACID"
+      }, {
+        "text": " (RNF-07) para prevenir cupos negativos o duplicidades.\n  * Esquema con restricciones nat"
+      }, {
+        "text": "ivas (`UNIQUE`, `CHECK`, `FOREIGN KEY`).\n  * Estructura Primary-Replica: el nodo prim"
+      }, {
+        "text": "ario atiende escrituras y una réplica atiende lecturas pesadas/reportes (RF-10)"
+      }, {
+        "text": " evitando cuellos de botella en la transaccionalidad de matrículas.\n* **Caché en Memoria ("
+      }, {
+        "text": "Redis):**\n  * Caché de catálogos de lectura frecuente e infrecuente mutación (planes"
+      }, {
+        "text": " de estudio, asignaturas, periodos académicos activos) para garantizar el SLA de respuesta de $\\le 3\\text{ s}$ para"
+      }, {
+        "text": " el 95% de peticiones (RNF-02).\n  * Almacén transitorio para lista de"
+      }, {
+        "text": " revocación de tokens JWT.\n\n---\n\n# 3. Diseño de Reglas de Negocio Clave\n\n1"
+      }, {
+        "text": ". **RN-1 (No duplicidad de matrícula):**\n   * *Mecanismo:* Índice único compuesto"
+      }, {
+        "text": " a nivel de base de datos: `UNIQUE(estudiante_id, asignatura_id, periodo_id)` y"
+      }, {
+        "text": " `UNIQUE(estudiante_id, grupo_id)`. Se complementa con validación previa en la capa de aplicación"
+      }, {
+        "text": ".\n2. **RN-2 (Control de cupo del grupo bajo concurrencia):**\n   * *M"
+      }, {
+        "text": "ecanismo:* Para prevenir condiciones de carrera cuando 300 usuarios intentan matricular el último cupo simultáneamente, la transacción de matrícula"
+      }, {
+        "text": " usa una actualización atómica con condición:\n     ```sql\n     UPDATE grupos \n     SET cupo_matriculado \u003d cupo_"
+      }, {
+        "text": "matriculado + 1 \n     WHERE id \u003d :grupo_id AND cupo_matriculado \u003c cupo_"
+      }, {
+        "text": "maximo;\n     ```\n     Si la consulta retorna 0 filas afectadas, se lanza una excepción de negocio `\""
+      }, {
+        "text": "Cupo agotado\"` y se aborta la transacción sin bloqueo de tabla completo.\n3. **RN-3 ("
+      }, {
+        "text": "Solo docente califica su grupo):**\n   * *Mecanismo:* Validación en la capa de servicio/pol"
+      }, {
+        "text": "ítica:\n     `Assert(grupo.docente_id \u003d\u003d usuarioActual.id || usuarioActual.tieneRol(\u0027"
+      }, {
+        "text": "ADMIN\u0027))`.\n4. **RN-4 (Estudiante solo ve notas publicadas):**\n   * *M"
+      }, {
+        "text": "ecanismo:* Consulta encapsulada con filtro mandatorio:\n     `SELECT * FROM notas WHERE matricula_id \u003d"
+      }, {
+        "text": " :id AND estado_publicacion \u003d \u0027PUBLICADA\u0027`.\n5. **RN-5 (Trazabilidad y Auditor"
+      }, {
+        "text": "ía):**\n   * *Mecanismo:* Interceptor AOP (Aspect-Oriented Programming) o middleware"
+      }, {
+        "text": " en endpoints mutadores (POST, PUT, DELETE) que despacha un evento desacoplado a la tabla `auditoria` con: "
+      }, {
+        "text": "`id_usuario`, `accion`, `entidad`, `datos_antes`, `datos_despues`, `timestamp` e"
+      }, {
+        "text": " `ip_origen`.\n\n---\n\n# 4. Decisiones de Arquitectura Justificadas (ADR)"
+      }, {
+        "text": "\n\n| ID | Decisión | Alternativa Descartada | Justificación Técnica |\n| :---: | :--- | :---"
+      }, {
+        "text": " | :--- |\n| **ADR-01** | **Monolito Modular** | Microservicios"
+      }, {
+        "text": " | Equipo reducido (3-5 personas) con riesgo de sobrecarga operacional. La modularidad interna ofrece límites de contexto"
+      }, {
+        "text": " claros sin el costo de red/infraestructura de microservicios. |\n| **ADR-02** | **PostgreSQL ("
+      }, {
+        "text": "RDBMS)** | NoSQL (MongoDB) | RN-1 y RN-2 exigen ACID estricto y"
+      }, {
+        "text": " consistencia inmediata. Las bases de datos relacionales manejan llaves compuestas e integridad referencial de forma nativa"
+      }, {
+        "text": " y robusta. |\n| **ADR-03** | **Tokens JWT en Cookies HttpOnly/Secure** | JWT en Local"
+      }, {
+        "text": "Storage / Sesión en memoria de servidor | La sesión en memoria rompe la escalabilidad horizontal (RNF-04)."
+      }, {
+        "text": " Guardar tokens en LocalStorage expone al sistema a robo por XSS. Las cookies seguras mitigan XSS y permiten backend stateless."
+      }, {
+        "text": " |\n| **ADR-04** | **Documentación OpenAPI 3.0 / Swagger** | Documentación"
+      }, {
+        "text": " manual (Wiki/Postman) | Cumple RNF-08. Permite autogenerar contratos, clientes"
+      }, {
+        "text": " de prueba y valida la interoperabilidad con plataformas externas a futuro. |\n| **ADR-05** | **Contenedores Docker"
+      }, {
+        "text": " con Compose/Kubernetes liviano** | Despliegue en Bare Metal tradicional | Garantiza portabilidad entre la nube o servidores"
+      }, {
+        "text": " locales con contenedores (Supuesto 3), facilitando despliegues reproducibles y escalado de réplicas en minutos"
+      }, {
+        "text": ". |\n\n---\n\n# 5. Análisis de Riesgos Arquitectónicos y Estrategias de Mitigación\n\n|"
+      }, {
+        "text": " Riesgo Identificado | Impacto | Probabilidad | Estrategia de Mitigación |\n| :--- |"
+      }, {
+        "text": " :---: | :---: | :--- |\n| **Picos de concurrencia en periodo de matrícula:** Blo"
+      }, {
+        "text": "queos en BD o latencia $\u003e 3\\text{ s}$ por consultas masivas. | Alto | Media"
+      }, {
+        "text": " | 1. Réplica de lectura para consultas de horarios/cupos.\u003cbr\u003e2. Redis para almacenar el"
+      }, {
+        "text": " catálogo general de asignaturas.\u003cbr\u003e3. Pool de conexiones optimizado (ej. PgBouncer/HikariCP) configurado"
+      }, {
+        "text": " para soportar 300 conexiones concurrentes sin saturar la RAM de la BD. |\n| **Cond"
+      }, {
+        "text": "ición de carrera en asignación de cupos (Sobrecupo):** Dos transacciones leen el último cupo disponible"
+      }, {
+        "text": " a la vez y ambas lo asignan. | Crítico | Media | Bloqueo a nivel de fila (`SELECT FOR"
+      }, {
+        "text": " UPDATE`) o sentencias condicionales atómicas (`UPDATE ... WHERE cupo_actual \u003c cupo_maximo`) dentro"
+      }, {
+        "text": " de una transacción ACID aislada. |\n| **Sobrecarga de la base de datos por la Auditoría continua"
+      }, {
+        "text": ":** Cada modificación escribe en la auditoría, duplicando las escrituras. | Medio | Alta | La escritura del log"
+      }, {
+        "text": " de auditoría se desacopla mediante una cola en memoria/evento asíncrono; el hilo principal confirma la matrícula/"
+      }, {
+        "text": "nota al usuario y un *worker* escribe el log en BD en milisegundos. |\n| **Deuda técnica"
+      }, {
+        "text": " por equipo pequeño:** Degradación de la modularidad convirtiéndose en un \"código espagueti\". | Alto | Media | Pruebas"
+      }, {
+        "text": " automatizadas de arquitectura (ej. ArchUnit / ESLint module boundaries) en la integración continua (CI) para prohib"
+      }, {
+        "text": "ir importaciones directas no autorizadas entre módulos. |\n| **Pérdida de datos por incidentes operativos (RNF"
+      }, {
+        "text": "-09):** Corrupción o caída imprevista del servidor de base de datos. | Crítico | Baja | Política"
+      }, {
+        "text": " de respaldos automáticos diarios (RPO \u003c 24 h), copia de WALs continuos para *Point"
+      }, {
+        "text": "-In-Time-Recovery* (RTO \u003c 2 h) y restauración probada periódicamente en ambientes de pruebas"
+      }, {
+        "text": ". |\n\n---\n\n# 6. Alineación de Calidad (RNF vs. Mecanismos Arquitectónicos)"
+      }, {
+        "text": "\n\n* **Rendimiento (RNF-02):** Backend asíncrono no bloqueante o con pool de h"
+      }, {
+        "text": "ilos dimensionado, índices B-Tree en llaves foráneas y campos de filtro (`periodo_id`, `programa"
+      }, {
+        "text": "_id`), y caché Redis.\n* **Disponibilidad 99.5% (RNF-0"
+      }, {
+        "text": "3):** 2 réplicas mínimas del contenedor de backend detrás del balanceador de carga con *health checks"
+      }, {
+        "text": "* automáticos de reemplazo; PostgreSQL con *failover* configurado.\n* **Mantenibilidad (RNF-"
+      }, {
+        "text": "05):** Arquitectura por capas (Controladores $\\rightarrow$ Servicios de Aplicación $\\rightarrow$ Dominio $\\"
+      }, {
+        "text": "rightarrow$ Repositorios) con inyección de dependencias para permitir pruebas unitarias con mocks.\n* **Privacidad (RN"
+      }, {
+        "text": "F-11):** Los DTOs (Data Transfer Objects) filtran datos sensibles en el backend; el serial"
+      }, {
+        "text": "izador nunca expone credenciales, identificadores internos de auditoría ni datos privados de otros estudiantes."
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }],
+      "createTime": "2026-11-07T17:27:43.144Z"
+    }, {
+      "text": "Gracias, ahora una descripción del modelo de despliegue, del modelo de datos y de la secuencia de matrícula.",
+      "role": "user",
+      "tokenCount": 24,
+      "createTime": "2026-11-07T17:32:34.363Z"
+    }, {
+      "text": "**Defining the Scope**\n\nI\u0027m focused on broadening the architecture proposal. Currently, I\u0027m defining the scope by targeting three specific technical views: the deployment model (topology) is the first. I have identified this as a key area.\n\n\n**Expanding the Data Model**\n\nI\u0027m now diving into the data model, sketching out an entity-relationship diagram and defining the relational schema. Key entities, their relationships, and crucial keys and constraints are taking shape, specifically for RN-1 through RN-5. I am working on the enrollment sequence diagram to illustrate the interaction between front-end, API gateway, enrollment module, database transaction, cupo validation, duplicate checking, and audit log. I will be incorporating concurrency considerations from RN-1, RN-2, RN-5 and RNF-07. Finally, I\u0027ve analyzed constraints like scale (300 concurrent users), team size, infrastructure choices (cloud or on-prem with containers), and the architecture: SPA + Stateless Backend Modular Monolith + PostgreSQL (with read replica/backup) + Redis.\n\n\n**Refining the Topology**\n\nI\u0027m now refining the deployment model\u0027s topology, specifically focusing on the reverse proxy and load balancer. I\u0027ve sketched the separation into public and internal zones, and I\u0027m detailing the key nodes: the reverse proxy (NGINX), the application container cluster (backend modular, likely 2-3 replicas), and the data zone with the PostgreSQL cluster (primary and read replica). Key considerations include RNF-01 (TLS/HTTPS termination), RNF-03 (99.5% availability), and RNF-04 (horizontal scalability).\n\n\n**Detailing the Infrastructure**\n\nI\u0027m now detailing the infrastructure components based on the established topology. I\u0027m focusing on the Redis service for caching catalogs and revoked tokens. Also, I\u0027m documenting the periodic backup agent to object storage (S3/MinIO) for RNF-09. A clear ASCII/Text diagram maps the flow from the web client, through HTTPS, reverse proxy (NGINX), backend containers, and finally to the PostgreSQL primary/replica and Redis. CI/CD strategy leverages Docker Compose or Swarm/ECS/K3s.\n\n\n**Structuring the Data**\n\nI\u0027m now detailing the data model further. I\u0027ve focused on entities like `estudiantes`, `programas`, `asignaturas`, `periodos`, `grupos`, `horarios_grupo`, and `matriculas`, and have refined their attributes and relationships. I\u0027m prioritizing the `grupos` and `matriculas` tables, which are vital for RN-2 and RN-3. I\u0027m also addressing the constraints described in RN-1, specifically the unique key constraints for student enrollments per group and course/period.\n\n\n**Elaborating Key Entities**\n\nI\u0027m now detailing the `calificaciones` and `auditoria_logs` tables, focusing on their crucial roles for RN-4 and RN-5, respectively. I\u0027m adding `periodo_id` and `asignatura_id` to the `matricula` table and including a `UNIQUE` constraint to maintain data integrity. I\u0027m also including `CHECK` constraints and `UNIQUE` constraints to enforce business rules within the database. I am working on a Mermaid sequence diagram to show the enrollment process flow, focusing on concurrency handling for high-user loads.\n\n\n",
+      "role": "model",
+      "tokenCount": 1897,
+      "isThought": true,
+      "parts": [{
+        "text": "**Defining the Scope**\n\nI\u0027m focused on broadening the architecture proposal. Currently, I\u0027m defining the scope by targeting three specific technical views: the deployment model (topology) is the first. I have identified this as a key area.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Expanding the Data Model**\n\nI\u0027m now diving into the data model, sketching out an entity-relationship diagram and defining the relational schema. Key entities, their relationships, and crucial keys and constraints are taking shape, specifically for RN-1 through RN-5. I am working on the enrollment sequence diagram to illustrate the interaction between front-end, API gateway, enrollment module, database transaction, cupo validation, duplicate checking, and audit log. I will be incorporating concurrency considerations from RN-1, RN-2, RN-5 and RNF-07. Finally, I\u0027ve analyzed constraints like scale (300 concurrent users), team size, infrastructure choices (cloud or on-prem with containers), and the architecture: SPA + Stateless Backend Modular Monolith + PostgreSQL (with read replica/backup) + Redis.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Refining the Topology**\n\nI\u0027m now refining the deployment model\u0027s topology, specifically focusing on the reverse proxy and load balancer. I\u0027ve sketched the separation into public and internal zones, and I\u0027m detailing the key nodes: the reverse proxy (NGINX), the application container cluster (backend modular, likely 2-3 replicas), and the data zone with the PostgreSQL cluster (primary and read replica). Key considerations include RNF-01 (TLS/HTTPS termination), RNF-03 (99.5% availability), and RNF-04 (horizontal scalability).\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Detailing the Infrastructure**\n\nI\u0027m now detailing the infrastructure components based on the established topology. I\u0027m focusing on the Redis service for caching catalogs and revoked tokens. Also, I\u0027m documenting the periodic backup agent to object storage (S3/MinIO) for RNF-09. A clear ASCII/Text diagram maps the flow from the web client, through HTTPS, reverse proxy (NGINX), backend containers, and finally to the PostgreSQL primary/replica and Redis. CI/CD strategy leverages Docker Compose or Swarm/ECS/K3s.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Structuring the Data**\n\nI\u0027m now detailing the data model further. I\u0027ve focused on entities like `estudiantes`, `programas`, `asignaturas`, `periodos`, `grupos`, `horarios_grupo`, and `matriculas`, and have refined their attributes and relationships. I\u0027m prioritizing the `grupos` and `matriculas` tables, which are vital for RN-2 and RN-3. I\u0027m also addressing the constraints described in RN-1, specifically the unique key constraints for student enrollments per group and course/period.\n\n\n",
+        "thought": true
+      }, {
+        "text": "**Elaborating Key Entities**\n\nI\u0027m now detailing the `calificaciones` and `auditoria_logs` tables, focusing on their crucial roles for RN-4 and RN-5, respectively. I\u0027m adding `periodo_id` and `asignatura_id` to the `matricula` table and including a `UNIQUE` constraint to maintain data integrity. I\u0027m also including `CHECK` constraints and `UNIQUE` constraints to enforce business rules within the database. I am working on a Mermaid sequence diagram to show the enrollment process flow, focusing on concurrency handling for high-user loads.\n\n\n",
+        "thought": true
+      }],
+      "createTime": "2026-11-07T17:32:34.364Z"
+    }, {
+      "text": "A continuación se detallan los tres componentes técnicos solicitados para el Sistema de Gestión Académica (SGA): el **modelo de despliegue**, el **modelo de datos** y el **diagrama de secuencia del proceso crítico de matrícula**.\n\n---\n\n# 1. Modelo de Despliegue\n\nConsiderando la restricción de un **equipo pequeño (3-5 personas)** y la meta de soportar **300 usuarios concurrentes** con **alta disponibilidad del 99,5% (RNF-03)**, se propone una topología basada en contenedores ligeros (Docker) sobre máquinas virtuales o servicio administrado de contenedores (por ejemplo, AWS ECS, Google Cloud Run o Docker Swarm/K3s en servidores propios).\n\n### Diagrama de Despliegue Físico / Lógico\n\n```text\n                                [ CLIENTES WEB ]\n                     (Navegadores modernos en HTTPS:443)\n                                      │\n                                      ▼\n             ┌─────────────────────────────────────────────────┐\n             │       ZONA DESMILITARIZADA (DMZ / Ingress)      │\n             │   Reverse Proxy / Load Balancer (NGINX/Traefik) │\n             │   - Terminación SSL/TLS (HTTPS obligatorio)     │\n             │   - Compresión estáticos SPA (HTML/JS/CSS)      │\n             │   - Rate Limiting básico                        │\n             └────────────────────────┬────────────────────────┘\n                                      │ (Red Privada Interna)\n         ┌────────────────────────────┴────────────────────────────┐\n         ▼                                                         ▼\n┌─────────────────────────────────┐       ┌─────────────────────────────────┐\n│     Nodo de Aplicación 1        │       │      Nodo de Aplicación 2       │\n│  ┌───────────────────────────┐  │       │  ┌───────────────────────────┐  │\n│  │ Backend SGA (Contenedor)  │  │       │  │ Backend SGA (Contenedor)  │  │\n│  │ - API REST Stateless      │  │       │  │ - API REST Stateless      │  │\n│  │ - Módulos en memoria      │  │       │  │ - Módulos en memoria      │  │\n│  └─────────────┬─────────────┘  │       │  └─────────────┬─────────────┘  │\n└────────────────┼────────────────┘       └────────────────┼────────────────┘\n                 │                                         │\n                 ├────────────────────┬────────────────────┘\n                 │                    │\n                 ▼                    ▼\n┌─────────────────────────────────┐ ┌───────────────────────────────────────┐\n│     Capa Caché (En memoria)     │ │        Capa de Base de Datos          │\n│  ┌───────────────────────────┐  │ │  ┌─────────────────────────────────┐  │\n│  │ Redis (Contenedor)        │  │ │  │ PostgreSQL - Nodo Primario (W)  │  │\n│  │ - Catálogos frecuentes    │  │ │  │ - Transacciones ACID (Matrícula)│  │\n│  │ - Lista negra de tokens   │  │ │  └────────────────┬────────────────┘  │\n│  └───────────────────────────┘  │ │                   │ (Replicación      │\n│                                 │ │                   ▼  Streaming)       │\n│                                 │ │  ┌─────────────────────────────────┐  │\n│                                 │ │  │ PostgreSQL - Read Replica (R)   │  │\n│                                 │ │  │ - Reportes y consultas masivas  │  │\n│                                 │ │  └─────────────────────────────────┘  │\n│                                 │ │  - PgBouncer (Pool de conexiones)     │\n│                                 │ │  - Backups diarios a Object Storage   │\n└─────────────────────────────────┘ └───────────────────────────────────────┘\n```\n\n### Características del Despliegue:\n1. **Frontend (SPA):** Servido directamente por el Reverse Proxy como archivos estáticos optimizados con cabeceras de caché agresivas para no consumir recursos del backend.\n2. **Backend (Stateless):** Mínimo 2 réplicas homogéneas activas para garantizar tolerancia a fallos. Si una instancia cae, el balanceador redirige el tráfico a la otra sin desconectar usuarios.\n3. **Persistencia (PostgreSQL con PgBouncer):** Para evitar que 300 conexiones simultáneas saturen la memoria de la base de datos, se utiliza un *Connection Pooler* (PgBouncer o el pool interno del backend tipo HikariCP).\n4. **Respaldo y Recuperación (RNF-09):** Respaldos diarios automáticos de la base de datos (Dump) y exportación continua del Write-Ahead Log (WAL) hacia un almacenamiento externo cifrado (ej. Amazon S3 / MinIO) para permitir recuperación a un punto en el tiempo (PITR).\n\n---\n\n# 2. Modelo de Datos Relacional\n\nA continuación se define el esquema relacional con sus tablas, llaves primarias (`PK`), foráneas (`FK`), tipos de datos y restricciones obligatorias para blindar las **Reglas de Negocio (RN-1 a RN-5)**.\n\n```text\n +------------------+        +----------------------+        +-------------------+\n |     USUARIOS     |        |      DOCENTES        |        |    ESTUDIANTES    |\n +------------------+        +----------------------+        +-------------------+\n | PK id (UUID)     |\u003c---1:1-| PK id (UUID)         |   1:1-\u003e| PK id (UUID)      |\n |    email (UQ)    |        | FK usuario_id        |---+    | FK usuario_id     |\n |    password_hash |        |    codigo_docente(UQ)|        |    codigo_est (UQ)|\n |    activo (BOOL) |        |    nombres, apellidos|        |    nombres, apell.|\n +--------+---------+        +----------+-----------+        +---------+---------+\n          |                             |                              |\n         1:N                            |                             1:N\n          ▼                            1:N                             |\n +------------------+                   |                              |\n |   USUARIO_ROLES  |                   |                              |\n +------------------+                   |                              |\n | PK usuario_id    |                   |                              |\n | PK rol_id        |                   |                              |\n +------------------+                   |                              |\n                                        ▼                              |\n +------------------+        +----------------------+                  |\n |   ASIGNATURAS    | 1:N    |        GRUPOS        |                  |\n +------------------+-------\u003e+----------------------+                  |\n | PK id (UUID)     |        | PK id (UUID)         |                  |\n | FK programa_id   |        | FK asignatura_id     |                  |\n |    codigo (UQ)   |        | FK periodo_id        |                  |\n |    creditos      |        | FK docente_id        |                  |\n +------------------+        |    codigo_grupo      |                  |\n                             |    cupo_maximo       |                  |\n                             |    cupo_matriculado  |                  |\n                             +----------+-----------+                  |\n                                        |                              |\n                                       1:N                             |\n                                        ▼                              ▼\n                             +-------------------------------------------+\n                             |                MATRICULAS                 |\n                             +-------------------------------------------+\n                             | PK id (UUID)                              |\n                             | FK estudiante_id                          |\n                             | FK grupo_id                               |\n                             | FK asignatura_id                          |\n                             | FK periodo_id                             |\n                             |    fecha_matricula                        |\n                             |    estado (MATRICULADA / CANCELADA)       |\n                             +---------------------+---------------------+\n                                                   |\n                                                  1:N\n                                                   ▼\n                                     +---------------------------+\n                                     |       CALIFICACIONES      |\n                                     +---------------------------+\n                                     | PK id (UUID)              |\n                                     | FK matricula_id           |\n                                     |    corte_parcial (INT)    |\n                                     |    valor_nota (DECIMAL)   |\n                                     |    publicada (BOOL)       |\n                                     +---------------------------+\n```\n\n### Definición de Tablas Principales y Restricciones de Integridad\n\n#### A. Grupos (Control de Cupos - RN-2)\n```sql\nCREATE TABLE grupos (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    asignatura_id UUID NOT NULL REFERENCES asignaturas(id),\n    periodo_id UUID NOT NULL REFERENCES periodos(id),\n    docente_id UUID NOT NULL REFERENCES docentes(id), -- RN-3: Docente titular\n    codigo_grupo VARCHAR(10) NOT NULL,\n    cupo_maximo INT NOT NULL CHECK (cupo_maximo \u003e 0),\n    cupo_matriculado INT NOT NULL DEFAULT 0,\n    CONSTRAINT chk_cupo_no_excedido CHECK (cupo_matriculado \u003c\u003d cupo_maximo), -- RN-2 a nivel motor\n    CONSTRAINT uq_grupo_periodo UNIQUE (asignatura_id, periodo_id, codigo_grupo)\n);\n```\n\n#### B. Matrículas (No Duplicidad - RN-1)\n```sql\nCREATE TABLE matriculas (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    estudiante_id UUID NOT NULL REFERENCES estudiantes(id),\n    grupo_id UUID NOT NULL REFERENCES grupos(id),\n    asignatura_id UUID NOT NULL REFERENCES asignaturas(id),\n    periodo_id UUID NOT NULL REFERENCES periodos(id),\n    fecha_matricula TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,\n    estado VARCHAR(20) DEFAULT \u0027MATRICULADA\u0027 CHECK (estado IN (\u0027MATRICULADA\u0027, \u0027CANCELADA\u0027)),\n    \n    -- RN-1: No permite cursar la misma asignatura 2 veces en el mismo periodo\n    CONSTRAINT uq_estudiante_asignatura_periodo \n        UNIQUE (estudiante_id, asignatura_id, periodo_id),\n        \n    -- RN-1: No permite registrarse dos veces en el mismo grupo\n    CONSTRAINT uq_estudiante_grupo \n        UNIQUE (estudiante_id, grupo_id)\n);\n```\n\n#### C. Calificaciones (Notas y Publicación - RN-3 y RN-4)\n```sql\nCREATE TABLE calificaciones (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    matricula_id UUID NOT NULL REFERENCES matriculas(id),\n    corte_parcial INT NOT NULL CHECK (corte_parcial BETWEEN 1 AND 3),\n    porcentaje DECIMAL(5,2) NOT NULL,\n    valor_nota DECIMAL(3,2) NOT NULL CHECK (valor_nota \u003e\u003d 0.0 AND valor_nota \u003c\u003d 5.0),\n    publicada BOOLEAN NOT NULL DEFAULT FALSE, -- RN-4: Condiciona visibilidad al estudiante\n    fecha_registro TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,\n    CONSTRAINT uq_matricula_corte UNIQUE (matricula_id, corte_parcial)\n);\n```\n\n#### D. Auditoría (Trazabilidad Mandatoria - RN-5 / RF-12)\n```sql\nCREATE TABLE auditoria_logs (\n    id BIGSERIAL PRIMARY KEY,\n    usuario_id UUID NOT NULL REFERENCES usuarios(id),\n    modulo VARCHAR(50) NOT NULL, -- \u0027MATRICULAS\u0027, \u0027CALIFICACIONES\u0027, \u0027ROLES\u0027\n    accion VARCHAR(20) NOT NULL, -- \u0027INSERT\u0027, \u0027UPDATE\u0027, \u0027DELETE\u0027\n    entidad_afectada VARCHAR(50) NOT NULL,\n    entidad_id UUID NOT NULL,\n    datos_anteriores JSONB,\n    datos_nuevos JSONB,\n    ip_origen VARCHAR(45) NOT NULL,\n    fecha_hora TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP\n);\nCREATE INDEX idx_auditoria_usuario_fecha ON auditoria_logs(usuario_id, fecha_hora);\n```\n\n---\n\n# 3. Secuencia del Proceso de Matrícula Académica\n\nEl siguiente flujo muestra cómo interactúan los componentes en el caso de mayor exigencia concurrente (RN-1, RN-2 y RN-5), resolviendo de forma atómica y segura la asignación de un cupo.\n\n### Diagrama de Secuencia\n\n```mermaid\nsequenceDiagram\n    autonumber\n    actor Estudiante as Estudiante (Navegador)\n    participant Gateway as API Gateway / NGINX\n    participant Auth as Interceptor / Auth Middleware\n    participant Service as Modulo Matrículas (App)\n    participant DB as PostgreSQL (Transacción ACID)\n    participant Audit as Worker / Async Logger\n\n    Estudiante-\u003e\u003eGateway: POST /api/v1/matriculas (grupo_id) [Cookie JWT]\n    Gateway-\u003e\u003eAuth: Valida certificado TLS y enruta petición\n    Auth-\u003e\u003eAuth: Verifica token JWT y rol \u0027ESTUDIANTE\u0027\n    Auth-\u003e\u003eService: Inicia caso de uso Matricular(estudiante_id, grupo_id)\n\n    Service-\u003e\u003eDB: BEGIN TRANSACTION (Nivel de aislamiento Read Committed)\n\n    Note over Service,DB: Paso 1: Validar RN-1 (No duplicidad)\n    Service-\u003e\u003eDB: SELECT id FROM matriculas WHERE estudiante_id \u003d :eId AND asignatura_id \u003d :aId AND periodo_id \u003d :pId\n    alt Ya está matriculado en la asignatura\n        DB--\u003e\u003eService: Registro encontrado\n        Service-\u003e\u003eDB: ROLLBACK\n        Service--\u003e\u003eEstudiante: HTTP 409 Conflict (\"Ya matriculado en esta asignatura\")\n    end\n\n    Note over Service,DB: Paso 2: Actualización Atómica de Cupo (RN-2)\n    Service-\u003e\u003eDB: UPDATE grupos SET cupo_matriculado \u003d cupo_matriculado + 1 WHERE id \u003d :grupo_id AND cupo_matriculado \u003c cupo_maximo RETURNING id;\n\n    alt Sin cupos disponibles (0 filas afectadas)\n        DB--\u003e\u003eService: 0 filas retornadas\n        Service-\u003e\u003eDB: ROLLBACK\n        Service--\u003e\u003eEstudiante: HTTP 422 Unprocessable Entity (\"Grupo sin cupos disponibles\")\n    else Cupo reservado con éxito\n        DB--\u003e\u003eService: 1 fila retornada (OK)\n        \n        Note over Service,DB: Paso 3: Crear el registro de matrícula\n        Service-\u003e\u003eDB: INSERT INTO matriculas (estudiante_id, grupo_id, ...) VALUES (...)\n        \n        Note over Service,DB: Paso 4: Confirmar la transacción\n        Service-\u003e\u003eDB: COMMIT TRANSACTION\n        DB--\u003e\u003eService: Transaction Committed\n        \n        Note over Service,Audit: Paso 5: Cumplir RN-5 (Auditoría)\n        Service-)Audit: Despacha evento asíncrono MatrículaRealizada(estudiante_id, grupo_id, IP)\n        Audit-\u003e\u003eDB: INSERT INTO auditoria_logs (...)\n\n        Service--\u003e\u003eEstudiante: HTTP 201 Created (Detalles de Matrícula exitosa)\n    end\n```\n\n### Puntos clave de esta implementación:\n1. **Prevención de condición de carrera sin bloquear tablas enteras:** La instrucción `UPDATE grupos SET cupo_matriculado \u003d cupo_matriculado + 1 WHERE id \u003d :id AND cupo_matriculado \u003c cupo_maximo` es atómica a nivel de fila (*row-level locking* nativo del motor relacional). Ningún estudiante podrá sobrepasar el cupo máximo aunque lleguen peticiones en el mismo milisegundo.\n2. **Resguardo de integridad en dos capas:** Se valida primero por consulta de aplicación para retornar mensajes amigables y, si dos peticiones cruzadas pasaran al mismo tiempo, el índice `UNIQUE` de la tabla `matriculas` expulsaría un error de violación de restricción que activa un `ROLLBACK` seguro.\n3. **Desacople del log de auditoría (RN-5):** La inserción del log se ejecuta como un evento en segundo plano tras el `COMMIT` de la matrícula; con ello se garantiza que la auditoría no prolongue el tiempo de respuesta al estudiante ($\u003c 3\\text{ s}$, RNF-02).",
+      "role": "model",
+      "finishReason": "STOP",
+      "tokenCount": 3582,
+      "parts": [{
+        "text": "A continuación se detallan los tres componentes técnicos solicitados para el Sistema de Gestión Académica (SGA): el **modelo de despliegue"
+      }, {
+        "text": "**, el **modelo de datos** y el **diagrama de secuencia del proceso crítico de matrícula**.\n\n---\n\n# 1. Modelo de"
+      }, {
+        "text": " Despliegue\n\nConsiderando la restricción de un **equipo pequeño (3-5 personas)** y la meta"
+      }, {
+        "text": " de soportar **300 usuarios concurrentes** con **alta disponibilidad del 99,5% (RNF-"
+      }, {
+        "text": "03)**, se propone una topología basada en contenedores ligeros (Docker) sobre máquinas virtuales o servicio administr"
+      }, {
+        "text": "ado de contenedores (por ejemplo, AWS ECS, Google Cloud Run o Docker Swarm/K3s en servidores propios"
+      }, {
+        "text": ").\n\n### Diagrama de Despliegue Físico / Lógico\n\n```text\n                                [ CLIENTES WEB"
+      }, {
+        "text": " ]\n                     (Navegadores modernos en HTTPS:443)\n                                      │\n                                      ▼"
+      }, {
+        "text": "\n             ┌─────────────────────────────────────────────────┐\n             │       ZONA DESMILITARIZADA (DMZ / In"
+      }, {
+        "text": "gress)      │\n             │   Reverse Proxy / Load Balancer (NGINX/Traefik) │"
+      }, {
+        "text": "\n             │   - Terminación SSL/TLS (HTTPS obligatorio)     │\n             │   - Compresión est"
+      }, {
+        "text": "áticos SPA (HTML/JS/CSS)      │\n             │   - Rate Limiting básico                        │\n             └────────────────────────"
+      }, {
+        "text": "┬────────────────────────┘\n                                      │ (Red Privada Interna)\n         ┌────────────────────────────┴────────────────────────────"
+      }, {
+        "text": "┐\n         ▼                                                         ▼\n┌─────────────────────────────────┐       ┌─────────────────────────────────┐\n│     Nodo de Aplic"
+      }, {
+        "text": "ación 1        │       │      Nodo de Aplicación 2       │\n│  ┌───────────────────────────┐  │       │"
+      }, {
+        "text": "  ┌───────────────────────────┐  │\n│  │ Backend SGA (Contenedor)  │  │       "
+      }, {
+        "text": "│  │ Backend SGA (Contenedor)  │  │\n│  │ - API REST Stateless      │  │       │  "
+      }, {
+        "text": "│ - API REST Stateless      │  │\n│  │ - Módulos en memoria      │  │       │"
+      }, {
+        "text": "  │ - Módulos en memoria      │  │\n│  └─────────────┬─────────────┘  │       │"
+      }, {
+        "text": "  └─────────────┬─────────────┘  │\n└────────────────┼────────────────┘       └────────────────┼────────────────┘\n                 │                                         "
+      }, {
+        "text": "│\n                 ├────────────────────┬────────────────────┘\n                 │                    │\n                 ▼                    ▼\n┌─────────────────────────────────┐ "
+      }, {
+        "text": "┌───────────────────────────────────────┐\n│     Capa Caché (En memoria)     │ │        Capa de Base de Datos          "
+      }, {
+        "text": "│\n│  ┌───────────────────────────┐  │ │  ┌─────────────────────────────────┐  │\n│  │ Redis ("
+      }, {
+        "text": "Contenedor)        │  │ │  │ PostgreSQL - Nodo Primario (W)  │  │\n"
+      }, {
+        "text": "│  │ - Catálogos frecuentes    │  │ │  │ - Transacciones ACID (Matrícula)│  │"
+      }, {
+        "text": "\n│  │ - Lista negra de tokens   │  │ │  └────────────────┬────────────────┘  │\n│  └────────────────────────"
+      }, {
+        "text": "───┘  │ │                   │ (Replicación      │\n│                                 │ │                   ▼  Streaming)       "
+      }, {
+        "text": "│\n│                                 │ │  ┌─────────────────────────────────┐  │\n│                                 │ │  │ PostgreSQL - Read Replica ("
+      }, {
+        "text": "R)   │  │\n│                                 │ │  │ - Reportes y consultas masivas  │  │\n"
+      }, {
+        "text": "│                                 │ │  └─────────────────────────────────┘  │\n│                                 │ │  - PgBouncer ("
+      }, {
+        "text": "Pool de conexiones)     │\n│                                 │ │  - Backups diarios a Object Storage   │\n└─────────────────────────────────"
+      }, {
+        "text": "┘ └───────────────────────────────────────┘\n```\n\n### Características del Despliegue:\n1. **Frontend"
+      }, {
+        "text": " (SPA):** Servido directamente por el Reverse Proxy como archivos estáticos optimizados con cabeceras de caché agresivas para"
+      }, {
+        "text": " no consumir recursos del backend.\n2. **Backend (Stateless):** Mínimo 2 réplicas homogé"
+      }, {
+        "text": "neas activas para garantizar tolerancia a fallos. Si una instancia cae, el balanceador redirige el tráfico a la otra"
+      }, {
+        "text": " sin desconectar usuarios.\n3. **Persistencia (PostgreSQL con PgBouncer):** Para evitar que 300 conexiones simult"
+      }, {
+        "text": "áneas saturen la memoria de la base de datos, se utiliza un *Connection Pooler* (PgBouncer o el"
+      }, {
+        "text": " pool interno del backend tipo HikariCP).\n4. **Respaldo y Recuperación (RNF-09):**"
+      }, {
+        "text": " Respaldos diarios automáticos de la base de datos (Dump) y exportación continua del Write-Ahead Log (WAL)"
+      }, {
+        "text": " hacia un almacenamiento externo cifrado (ej. Amazon S3 / MinIO) para permitir recuperación a un punto en el tiempo"
+      }, {
+        "text": " (PITR).\n\n---\n\n# 2. Modelo de Datos Relacional\n\nA continuación se define el esquema relacional con sus"
+      }, {
+        "text": " tablas, llaves primarias (`PK`), foráneas (`FK`), tipos de datos y restricciones obligatorias para blindar las"
+      }, {
+        "text": " **Reglas de Negocio (RN-1 a RN-5)**.\n\n```text\n +------------------+        +----------------------+"
+      }, {
+        "text": "        +-------------------+\n |     USUARIOS     |        |      DOCENTES        |        |    ESTUDIANTES    |\n"
+      }, {
+        "text": " +------------------+        +----------------------+        +-------------------+\n | PK id (UUID)     |\u003c---1:"
+      }, {
+        "text": "1-| PK id (UUID)         |   1:1-\u003e| PK id (UUID)      |\n |    "
+      }, {
+        "text": "email (UQ)    |        | FK usuario_id        |---+    | FK usuario_id     |\n |    password_"
+      }, {
+        "text": "hash |        |    codigo_docente(UQ)|        |    codigo_est (UQ)|\n |    activo ("
+      }, {
+        "text": "BOOL) |        |    nombres, apellidos|        |    nombres, apell.|\n +--------+---------+        +----------"
+      }, {
+        "text": "+-----------+        +---------+---------+\n          |                             |                              |\n         1:N                            |                             "
+      }, {
+        "text": "1:N\n          ▼                            1:N                             |\n +------------------+                   |                              |\n |   USUARIO"
+      }, {
+        "text": "_ROLES  |                   |                              |\n +------------------+                   |                              |\n | PK usuario_id"
+      }, {
+        "text": "    |                   |                              |\n | PK rol_id        |                   |                              |\n +------------------+                   |"
+      }, {
+        "text": "                              |\n                                        ▼                              |\n +------------------+        +----------------------+                  |\n |   ASIGNATURAS    "
+      }, {
+        "text": "| 1:N    |        GRUPOS        |                  |\n +------------------+-------\u003e+----------------------+                  |\n |"
+      }, {
+        "text": " PK id (UUID)     |        | PK id (UUID)         |                  |\n | FK programa_id   "
+      }, {
+        "text": "|        | FK asignatura_id     |                  |\n |    codigo (UQ)   |        | FK periodo"
+      }, {
+        "text": "_id        |                  |\n |    creditos      |        | FK docente_id        |                  |\n"
+      }, {
+        "text": " +------------------+        |    codigo_grupo      |                  |\n                             |    cupo_maximo       |                  |\n"
+      }, {
+        "text": "                             |    cupo_matriculado  |                  |\n                             +----------+-----------+                  |\n                                        |                              "
+      }, {
+        "text": "|\n                                       1:N                             |\n                                        ▼                              ▼\n                             +-------------------------------------------+\n                             |                "
+      }, {
+        "text": "MATRICULAS                 |\n                             +-------------------------------------------+\n                             | PK id (UUID)                              |\n                             | FK estudiante_"
+      }, {
+        "text": "id                          |\n                             | FK grupo_id                               |\n                             | FK asignatura_id                          |\n                             | FK periodo_id                             "
+      }, {
+        "text": "|\n                             |    fecha_matricula                        |\n                             |    estado (MATRICULADA / CANCELADA)       |"
+      }, {
+        "text": "\n                             +---------------------+---------------------+\n                                                   |\n                                                  1:N\n                                                   ▼\n                                     "
+      }, {
+        "text": "+---------------------------+\n                                     |       CALIFICACIONES      |\n                                     +---------------------------+\n                                     | PK id"
+      }, {
+        "text": " (UUID)              |\n                                     | FK matricula_id           |\n                                     |    corte_par"
+      }, {
+        "text": "cial (INT)    |\n                                     |    valor_nota (DECIMAL)   |\n                                     |    "
+      }, {
+        "text": "publicada (BOOL)       |\n                                     +---------------------------+\n```\n\n### Definición de Tablas Princip"
+      }, {
+        "text": "ales y Restricciones de Integridad\n\n#### A. Grupos (Control de Cupos - RN-2)\n"
+      }, {
+        "text": "```sql\nCREATE TABLE grupos (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    asignatura_id UUID NOT NULL"
+      }, {
+        "text": " REFERENCES asignaturas(id),\n    periodo_id UUID NOT NULL REFERENCES periodos(id),\n    doc"
+      }, {
+        "text": "ente_id UUID NOT NULL REFERENCES docentes(id), -- RN-3: Docente titular\n    codigo_grupo VARCHAR"
+      }, {
+        "text": "(10) NOT NULL,\n    cupo_maximo INT NOT NULL CHECK (cupo_maximo \u003e 0"
+      }, {
+        "text": "),\n    cupo_matriculado INT NOT NULL DEFAULT 0,\n    CONSTRAINT chk_cupo_no"
+      }, {
+        "text": "_excedido CHECK (cupo_matriculado \u003c\u003d cupo_maximo), -- RN-2 a nivel motor"
+      }, {
+        "text": "\n    CONSTRAINT uq_grupo_periodo UNIQUE (asignatura_id, periodo_id, codigo_grupo"
+      }, {
+        "text": ")\n);\n```\n\n#### B. Matrículas (No Duplicidad - RN-1)\n"
+      }, {
+        "text": "```sql\nCREATE TABLE matriculas (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    estudiante"
+      }, {
+        "text": "_id UUID NOT NULL REFERENCES estudiantes(id),\n    grupo_id UUID NOT NULL REFERENCES grupos(id),\n    asignatura_id"
+      }, {
+        "text": " UUID NOT NULL REFERENCES asignaturas(id),\n    periodo_id UUID NOT NULL REFERENCES periodos(id),"
+      }, {
+        "text": "\n    fecha_matricula TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,\n    estado VARCHAR(20) DEFAULT"
+      }, {
+        "text": " \u0027MATRICULADA\u0027 CHECK (estado IN (\u0027MATRICULADA\u0027, \u0027CANCELADA\u0027)),\n    \n    "
+      }, {
+        "text": "-- RN-1: No permite cursar la misma asignatura 2 veces en el mismo periodo\n    CONSTRAINT uq_"
+      }, {
+        "text": "estudiante_asignatura_periodo \n        UNIQUE (estudiante_id, asignatura_id, periodo_id),"
+      }, {
+        "text": "\n        \n    -- RN-1: No permite registrarse dos veces en el mismo grupo\n    CONSTRAINT uq"
+      }, {
+        "text": "_estudiante_grupo \n        UNIQUE (estudiante_id, grupo_id)\n);\n```\n\n"
+      }, {
+        "text": "#### C. Calificaciones (Notas y Publicación - RN-3 y RN-4)\n```sql\nCREATE TABLE calificaciones ("
+      }, {
+        "text": "\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    matricula_id UUID NOT NULL REFERENCES matric"
+      }, {
+        "text": "ulas(id),\n    corte_parcial INT NOT NULL CHECK (corte_parcial BETWEEN 1 AND 3"
+      }, {
+        "text": "),\n    porcentaje DECIMAL(5,2) NOT NULL,\n    valor_nota DECIMAL(3,2) NOT NULL CHECK"
+      }, {
+        "text": " (valor_nota \u003e\u003d 0.0 AND valor_nota \u003c\u003d 5.0),\n    publicada BOOLE"
+      }, {
+        "text": "AN NOT NULL DEFAULT FALSE, -- RN-4: Condiciona visibilidad al estudiante\n    fecha_registro TIMESTAMP WITH TIME ZONE DEFAULT CURRENT"
+      }, {
+        "text": "_TIMESTAMP,\n    CONSTRAINT uq_matricula_corte UNIQUE (matricula_id, corte_parcial)\n);"
+      }, {
+        "text": "\n```\n\n#### D. Auditoría (Trazabilidad Mandatoria - RN-5 / RF-12)\n"
+      }, {
+        "text": "```sql\nCREATE TABLE auditoria_logs (\n    id BIGSERIAL PRIMARY KEY,\n    usuario_id UUID NOT NULL REFERENCES"
+      }, {
+        "text": " usuarios(id),\n    modulo VARCHAR(50) NOT NULL, -- \u0027MATRICULAS\u0027, \u0027CALIFIC"
+      }, {
+        "text": "ACIONES\u0027, \u0027ROLES\u0027\n    accion VARCHAR(20) NOT NULL, -- \u0027INSERT\u0027, \u0027UPDATE\u0027, \u0027DELETE"
+      }, {
+        "text": "\u0027\n    entidad_afectada VARCHAR(50) NOT NULL,\n    entidad_id UUID"
+      }, {
+        "text": " NOT NULL,\n    datos_anteriores JSONB,\n    datos_nuevos JSONB,\n    ip_origen VARCHAR("
+      }, {
+        "text": "45) NOT NULL,\n    fecha_hora TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP\n);\nCREATE INDEX idx_auditoria_"
+      }, {
+        "text": "usuario_fecha ON auditoria_logs(usuario_id, fecha_hora);\n```\n\n---\n\n# 3. Secuencia del"
+      }, {
+        "text": " Proceso de Matrícula Académica\n\nEl siguiente flujo muestra cómo interactúan los componentes en el caso de mayor exig"
+      }, {
+        "text": "encia concurrente (RN-1, RN-2 y RN-5), resolviendo de forma atómica y segura la"
+      }, {
+        "text": " asignación de un cupo.\n\n### Diagrama de Secuencia\n\n```mermaid\nsequenceDiagram\n    autonumber\n    "
+      }, {
+        "text": "actor Estudiante as Estudiante (Navegador)\n    participant Gateway as API Gateway / NGINX\n    participant Auth"
+      }, {
+        "text": " as Interceptor / Auth Middleware\n    participant Service as Modulo Matrículas (App)\n    participant DB as"
+      }, {
+        "text": " PostgreSQL (Transacción ACID)\n    participant Audit as Worker / Async Logger\n\n    Estudiante-\u003e\u003eGateway: POST"
+      }, {
+        "text": " /api/v1/matriculas (grupo_id) [Cookie JWT]\n    Gateway-\u003e\u003eAuth: Val"
+      }, {
+        "text": "ida certificado TLS y enruta petición\n    Auth-\u003e\u003eAuth: Verifica token JWT y rol \u0027ESTUDIANTE\u0027"
+      }, {
+        "text": "\n    Auth-\u003e\u003eService: Inicia caso de uso Matricular(estudiante_id, grupo_id)\n\n    Service-\u003e"
+      }, {
+        "text": "\u003eDB: BEGIN TRANSACTION (Nivel de aislamiento Read Committed)\n\n    Note over Service,DB: Paso 1: Valid"
+      }, {
+        "text": "ar RN-1 (No duplicidad)\n    Service-\u003e\u003eDB: SELECT id FROM matriculas WHERE estudiante_id \u003d"
+      }, {
+        "text": " :eId AND asignatura_id \u003d :aId AND periodo_id \u003d :pId\n    alt Ya está matriculado en la asignatura"
+      }, {
+        "text": "\n        DB--\u003e\u003eService: Registro encontrado\n        Service-\u003e\u003eDB: ROLLBACK\n        Service--\u003e\u003eEstudiante:"
+      }, {
+        "text": " HTTP 409 Conflict (\"Ya matriculado en esta asignatura\")\n    end\n\n    Note over Service,DB: Paso 2:"
+      }, {
+        "text": " Actualización Atómica de Cupo (RN-2)\n    Service-\u003e\u003eDB: UPDATE grupos SET cupo_matriculado \u003d"
+      }, {
+        "text": " cupo_matriculado + 1 WHERE id \u003d :grupo_id AND cupo_matriculado \u003c cupo_max"
+      }, {
+        "text": "imo RETURNING id;\n\n    alt Sin cupos disponibles (0 filas afectadas)\n        DB--\u003e\u003eService: "
+      }, {
+        "text": "0 filas retornadas\n        Service-\u003e\u003eDB: ROLLBACK\n        Service--\u003e\u003eEstudiante: HTTP 422 Un"
+      }, {
+        "text": "processable Entity (\"Grupo sin cupos disponibles\")\n    else Cupo reservado con éxito\n        DB--\u003e\u003eService: 1"
+      }, {
+        "text": " fila retornada (OK)\n        \n        Note over Service,DB: Paso 3: Crear el registro de matrícula\n        Service"
+      }, {
+        "text": "-\u003e\u003eDB: INSERT INTO matriculas (estudiante_id, grupo_id, ...) VALUES (...)\n        \n        Note"
+      }, {
+        "text": " over Service,DB: Paso 4: Confirmar la transacción\n        Service-\u003e\u003eDB: COMMIT TRANSACTION\n        "
+      }, {
+        "text": "DB--\u003e\u003eService: Transaction Committed\n        \n        Note over Service,Audit: Paso 5: Cumplir"
+      }, {
+        "text": " RN-5 (Auditoría)\n        Service-)Audit: Despacha evento asíncrono Matr"
+      }, {
+        "text": "ículaRealizada(estudiante_id, grupo_id, IP)\n        Audit-\u003e\u003eDB: INSERT INTO auditoria"
+      }, {
+        "text": "_logs (...)\n\n        Service--\u003e\u003eEstudiante: HTTP 201 Created (Detalles de Matrícula exit"
+      }, {
+        "text": "osa)\n    end\n```\n\n### Puntos clave de esta implementación:\n1. **Prevención de condición de carrera sin"
+      }, {
+        "text": " bloquear tablas enteras:** La instrucción `UPDATE grupos SET cupo_matriculado \u003d cupo_matriculado + "
+      }, {
+        "text": "1 WHERE id \u003d :id AND cupo_matriculado \u003c cupo_maximo` es atómica a nivel de fila (*"
+      }, {
+        "text": "row-level locking* nativo del motor relacional). Ningún estudiante podrá sobrepasar el cupo máximo aunque lleg"
+      }, {
+        "text": "uen peticiones en el mismo milisegundo.\n2. **Resguardo de integridad en dos capas:** Se"
+      }, {
+        "text": " valida primero por consulta de aplicación para retornar mensajes amigables y, si dos peticiones cruzadas pasaran al mismo tiempo, el índice "
+      }, {
+        "text": "`UNIQUE` de la tabla `matriculas` expulsaría un error de violación de restricción que activa un `ROLLBACK` seguro"
+      }, {
+        "text": ".\n3. **Desacople del log de auditoría (RN-5):** La inserción del log se ejecuta"
+      }, {
+        "text": " como un evento en segundo plano tras el `COMMIT` de la matrícula; con ello se garantiza que la auditoría no prolong"
+      }, {
+        "text": "ue el tiempo de respuesta al estudiante ($\u003c 3\\text{ s}$, RNF-02)."
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }],
+      "createTime": "2026-11-07T17:32:50.083Z"
+    }],
+    "pendingInputs": [{
+      "text": "",
+      "role": "user"
+    }]
+  }
+}
