@@ -16,8 +16,5 @@ Monolito modular con API REST, frontend web (SPA), PostgreSQL y despliegue en co
 4. Datos conceptual
 5. Secuencia de matrícula
 
-## Video de sustentación
-[pegar enlace de YouTube]
-
 ## Alcance
 Este repositorio contiene el diseño arquitectónico. No se implementó el sistema ni se hicieron pruebas de carga.
